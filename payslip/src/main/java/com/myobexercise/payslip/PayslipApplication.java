@@ -16,5 +16,6 @@ public class PayslipApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PayslipApplication.class, args);
+		System.out.println("AFTER RUN GALLO");
 	}
 }
