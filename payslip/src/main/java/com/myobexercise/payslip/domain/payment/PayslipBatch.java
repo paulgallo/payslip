@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Entity
 @Table(name = "PAYSLIP_BATCH")
@@ -31,6 +32,9 @@ public class PayslipBatch {
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	@OrderColumn
 	private List<Payslip> payslips;
+
+	@Transient
+	private String link;
 
 	public PayslipBatch() {}
 
@@ -64,6 +68,14 @@ public class PayslipBatch {
 
 	public void setFilename(String filename) {
 		this.filename = filename;
+	}
+
+	public String getLink() {
+		return link;
+	}
+
+	public void setLink(String link) {
+		this.link = link;
 	}
 
 }

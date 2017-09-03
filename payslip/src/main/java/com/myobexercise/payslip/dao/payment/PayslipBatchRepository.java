@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 @org.springframework.stereotype.Repository
 public interface PayslipBatchRepository extends Repository<PayslipBatch, Long> {
-	List<PayslipBatch> findAll();
+	List<PayslipBatch> findAllByOrderById();
 
 	@Query("SELECT p FROM PayslipBatch p LEFT JOIN FETCH p.payslips WHERE p.id = (:id)")
 	PayslipBatch findOneAndFetchPayslips(@Param("id") Long id);

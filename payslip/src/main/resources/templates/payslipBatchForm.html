@@ -1,0 +1,80 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+	  <meta charset="utf-8"/>
+	  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+	  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	  <title>Payslip Batch Processor</title>
+	
+	  <!-- Bootstrap -->
+	  <link th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap.min.css}" rel="stylesheet" media="screen" />
+	  <link th:href="@{/webjars/bootstrap/3.3.7/css/bootstrap-theme.min.css}" rel="stylesheet" media="screen" />
+	
+	  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	  <!--[if lt IE 9]>
+	    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+	    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+	  <![endif]-->
+	</head>
+	<body>
+		<div class="container">
+			<div class="jumbotron">
+				<h2 class="text-center">Employee Monthly Payslip</h2>
+				<br/>
+				<br/>
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						Select Employee Income File To Process 
+					</div>
+					<div class="panel-body">
+						<div class="container">
+							<form class="form-horizontal" method="POST" action="/payslip-batches" enctype="multipart/form-data">
+								<div class="form-group">
+									<div class="input-group">
+								      <input type="file" class="form-control" name="payslipBatchFile"
+											placeholder="Upload File" required="true"></input>
+								      <span class="input-group-btn">
+								        <button type="submit" class="btn btn-primary" id="btnSubmit">
+											<span class="glyphicon glyphicon-upload" aria-hidden="true"></span> Process Selected File
+										</button>
+								      </span>
+								    </div>
+								</div>
+							</form>
+						</div>
+						<div th:if="${message}">
+							<div class="alert alert-success" role="alert" th:text="${message}"></div>
+						</div>
+					</div>
+				</div>
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						Processed Payslip Batches 
+					</div>
+					<div class="panel-body" th:if="${#lists.isEmpty(payslipBatches)}">
+						<div class="alert alert-info" role="alert">No Payslip Batches Found.</div>	
+					</div>
+					<table class="table" th:if="${not #lists.isEmpty(payslipBatches)}">
+						<tr>
+							<th>Batch Id</th>
+							<th>Filename</th> 
+							<th>Processed</th>
+							<th>Download</th>
+					 	</tr>
+					 	<tr th:each="payslipBatch : ${payslipBatches}">
+					 		<td th:text="${payslipBatch.id}"/>
+					 		<td th:text="${payslipBatch.filename}"/>
+					 		<td th:text="${payslipBatch.processedDateTime}"/>
+					 		<td>
+					 			<a th:href="${payslipBatch.link}" role="button">
+					 				<span class="glyphicon glyphicon-download" aria-hidden="true"></span>
+					 			</a>
+					 		</td>
+					 	</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

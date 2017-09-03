@@ -2,6 +2,7 @@ package com.myobexercise.payslip.service.payslip;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.myobexercise.payslip.dao.payment.PayslipBatchRepository;
 import com.myobexercise.payslip.domain.payment.IncomeItem;
@@ -10,6 +11,7 @@ import com.myobexercise.payslip.domain.payment.PayslipBatch;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -41,15 +43,7 @@ public class PayslipBatchService {
 		this.payslipService = payslipService;
 	}
 
-	// @Bean(name = "multipartResolver")
-	// public CommonsMultipartResolver createMultipartResolver() {
-	// CommonsMultipartResolver resolver = new CommonsMultipartResolver();
-	// resolver.setDefaultEncoding("utf-8");
-	// resolver.setMaxUploadSize(1048576); // 1MB max
-	// return resolver;
-	// }
-
-	List<IncomeItem> parsePayslipBatchFileForIncomeItems(MultipartFile file) {
+	protected List<IncomeItem> parseCSVFileForIncomeItems(MultipartFile file) {
 		CsvMapper csvMapper = new CsvMapper();
 
 		MappingIterator<IncomeItem> mappingIterator;
@@ -66,9 +60,9 @@ public class PayslipBatchService {
 		return incomeItems;
 	}
 
-	public PayslipBatch createPayslipBatch(MultipartFile file) {
+	public PayslipBatch createPayslipBatchForCSVFile(MultipartFile file) {
 		String filename = StringUtils.cleanPath(file.getOriginalFilename());
-		List<IncomeItem> incomeItems = parsePayslipBatchFileForIncomeItems(file);
+		List<IncomeItem> incomeItems = parseCSVFileForIncomeItems(file);
 		List<Payslip> payslips = createPayslips(incomeItems);
 		return createPayslipBatchForPayslips(filename, payslips);
 	}
@@ -85,12 +79,16 @@ public class PayslipBatchService {
 
 	protected String determineBatchFilename(String originalFilename,
 			LocalDateTime processedDateTime) {
-		StringBuilder batchFilename = new StringBuilder(StringUtils.isEmpty(originalFilename)
-				? processedDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmSSSSS"))
-				: originalFilename);
-		batchFilename.append("-payslips.csv");
-		String filename = batchFilename.toString();
-		return filename;
+		StringBuilder batchFilename = new StringBuilder("payslips-");
+		if (StringUtils.isEmpty(originalFilename)) {
+			batchFilename
+					.append(processedDateTime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmSSSSS")));
+			batchFilename.append(".csv");
+		} else {
+			batchFilename.append(originalFilename);
+		}
+
+		return batchFilename.toString();
 	}
 
 	protected List<Payslip> createPayslips(List<IncomeItem> incomeItems) {
@@ -99,11 +97,54 @@ public class PayslipBatchService {
 	}
 
 	public List<PayslipBatch> findAllPayslipBatches() {
-		return payslipBatchRepository.findAll();
+		return payslipBatchRepository.findAllByOrderById();
 	}
 
-	public PayslipBatch findPayslipBatchById(Long id) {
-		PayslipBatch payslipBatch = payslipBatchRepository.findOneAndFetchPayslips(id);
+	public PayslipBatch createCSVFileForPayslipBatchId(Long payslipBatchId,
+			StringWriter stringWriter) {
+		PayslipBatch payslipBatch = payslipBatchRepository.findOneAndFetchPayslips(payslipBatchId);
+		if (payslipBatch == null) {
+			throw new RuntimeException(
+					"Payslip Batch not found for Payslip Batch Id: " + payslipBatchId + ".");
+		}
+		CsvMapper csvMapper = new CsvMapper();
+		ObjectWriter objectWriter = csvMapper.writerWithTypedSchemaFor(Payslip.class);
+		payslipBatch.getPayslips().stream().forEachOrdered(p -> {
+			try {
+				stringWriter.append(objectWriter.writeValueAsString(p));
+				stringWriter.append(System.lineSeparator());
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException(
+						"Problem loading CSV data for Payslip Batch Id: " + payslipBatchId + ".");
+			}
+		});
+
 		return payslipBatch;
 	}
+
+	public String createCSVFileForPayslipBatchId2(Long payslipBatchId) {
+		PayslipBatch payslipBatch = payslipBatchRepository.findOneAndFetchPayslips(payslipBatchId);
+		if (payslipBatch == null) {
+			throw new RuntimeException(
+					"Payslip Batch not found for Payslip Batch Id: " + payslipBatchId + ".");
+		}
+		CsvMapper csvMapper = new CsvMapper();
+		ObjectWriter objectWriter = csvMapper.writerWithTypedSchemaFor(Payslip.class);
+		StringBuilder stringWriter = new StringBuilder();
+		payslipBatch.getPayslips().stream().forEachOrdered(p -> {
+			try {
+				stringWriter.append(objectWriter.writeValueAsString(p));
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException(
+						"Problem loading CSV data for Payslip Batch Id: " + payslipBatchId + ".");
+			}
+		});
+
+		return stringWriter.toString();
+	}
+
+	public PayslipBatch findPayslipBatchById(Long payslipBatchId) {
+		return payslipBatchRepository.findOneAndFetchPayslips(payslipBatchId);
+	}
+
 }

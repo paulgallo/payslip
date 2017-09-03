@@ -37,13 +37,13 @@ public class PayslipBatchRepositoryTest {
 	}
 
 	@Test
-	public void testFindAll() {
+	public void testFindAllByOrderById() {
 		PayslipBatch payslipBatchToSave1 = createSamplePayslipBatch();
 		PayslipBatch payslipBatchToSave2 = createSamplePayslipBatch();
 		this.entityManager.persistAndFlush(payslipBatchToSave1);
 		this.entityManager.persistAndFlush(payslipBatchToSave2);
 
-		List<PayslipBatch> payslipBatches = payslipBatchRepository.findAll();
+		List<PayslipBatch> payslipBatches = payslipBatchRepository.findAllByOrderById();
 
 		assertThat(payslipBatches).hasSize(2);
 		assertThatPayslipBatchesMatch(payslipBatchToSave1, payslipBatches.get(0));

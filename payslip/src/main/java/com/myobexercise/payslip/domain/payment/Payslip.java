@@ -1,5 +1,7 @@
 package com.myobexercise.payslip.domain.payment;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 import java.math.BigDecimal;
 
 import javax.persistence.Column;
@@ -11,6 +13,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "PAYSLIP")
+@JsonPropertyOrder({"fullName", "payPeriod", "grossIncome", "incomeTax", "superannuation"})
 public class Payslip {
 
 	@Id
