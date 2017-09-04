@@ -1,4 +1,4 @@
-package com.myobexercise.payslip.domain.payment;
+package com.myobexercise.payslip.domain.payslip;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -10,6 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import org.springframework.core.style.ToStringCreator;
 
 @Entity
 @Table(name = "PAYSLIP")
@@ -117,4 +119,9 @@ public class Payslip {
 		this.id = id;
 	}
 
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append(id).append(fullName).append(payPeriod)
+				.append(grossIncome).append(incomeTax).append(netIncome).append(superannuation).toString();
+	}
 }

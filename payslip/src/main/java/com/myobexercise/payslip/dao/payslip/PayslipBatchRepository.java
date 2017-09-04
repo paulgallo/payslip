@@ -1,6 +1,6 @@
-package com.myobexercise.payslip.dao.payment;
+package com.myobexercise.payslip.dao.payslip;
 
-import com.myobexercise.payslip.domain.payment.PayslipBatch;
+import com.myobexercise.payslip.domain.payslip.batch.PayslipBatch;
 
 import java.util.List;
 

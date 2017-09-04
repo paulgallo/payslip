@@ -9,10 +9,11 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "INCOME_RATE_TAX_BRACKET", uniqueConstraints = {
-		@UniqueConstraint(columnNames = { "BRACKET_START_VALUE", "INCOME_RATE_PERIOD_ID" }),
-		@UniqueConstraint(columnNames = { "BRACKET_END_VALUE", "INCOME_RATE_PERIOD_ID" }) })
-public class IncomeRateTaxBracket {
+@Table(name = "INCOME_TAX_RATE_BRACKET",
+		uniqueConstraints = {
+				@UniqueConstraint(columnNames = {"BRACKET_START_VALUE", "INCOME_TAX_RATE_PERIOD_ID"}),
+				@UniqueConstraint(columnNames = {"BRACKET_END_VALUE", "INCOME_TAX_RATE_PERIOD_ID"})})
+public class IncomeTaxRateBracket {
 	@Id
 	@Column
 	private Long id;
@@ -29,8 +30,7 @@ public class IncomeRateTaxBracket {
 	@Column(name = "ADDITIONAL_TAX_AMOUNT", precision = 20, scale = 0, nullable = false)
 	private BigDecimal additionalTaxAmount;
 
-	public IncomeRateTaxBracket() {
-	}
+	public IncomeTaxRateBracket() {}
 
 	public Long getId() {
 		return id;

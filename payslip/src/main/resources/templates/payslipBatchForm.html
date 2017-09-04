@@ -29,7 +29,7 @@
 					</div>
 					<div class="panel-body">
 						<div class="container">
-							<form class="form-horizontal" method="POST" action="/payslip-batches" enctype="multipart/form-data">
+							<form class="form-horizontal" method="POST" action="/" enctype="multipart/form-data">
 								<div class="form-group">
 									<div class="input-group">
 								      <input type="file" class="form-control" name="payslipBatchFile"
@@ -46,6 +46,12 @@
 						<div th:if="${message}">
 							<div class="alert alert-success" role="alert" th:text="${message}"></div>
 						</div>
+						<div th:if="${errorMessage}">
+							<div class="alert alert-danger" role="alert" th:text="${errorMessage}"></div>
+						</div>
+						<!-- <div th:if="${message == null and errorMessage == null}">
+							<div class="alert alert-info" role="alert">Please upload an Income Item CSV File.</div>
+						</div> -->
 					</div>
 				</div>
 				<div class="panel panel-primary">
@@ -59,13 +65,11 @@
 						<tr>
 							<th>Batch Id</th>
 							<th>Filename</th> 
-							<th>Processed</th>
 							<th>Download</th>
 					 	</tr>
 					 	<tr th:each="payslipBatch : ${payslipBatches}">
 					 		<td th:text="${payslipBatch.id}"/>
-					 		<td th:text="${payslipBatch.filename}"/>
-					 		<td th:text="${payslipBatch.processedDateTime}"/>
+					 		<td th:text="${payslipBatch.batchName}"/>
 					 		<td>
 					 			<a th:href="${payslipBatch.link}" role="button">
 					 				<span class="glyphicon glyphicon-download" aria-hidden="true"></span>

@@ -1,4 +1,8 @@
-package com.myobexercise.payslip.domain.payment;
+package com.myobexercise.payslip.domain.payslip.batch;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.myobexercise.payslip.domain.payslip.IncomeItem;
+import com.myobexercise.payslip.domain.payslip.Payslip;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,6 +19,8 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.springframework.core.style.ToStringCreator;
+
 @Entity
 @Table(name = "PAYSLIP_BATCH")
 public class PayslipBatch {
@@ -23,9 +29,10 @@ public class PayslipBatch {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@Column(name = "FILENAME", nullable = false)
-	private String filename;
+	@Column(name = "BATCHNAME", nullable = false)
+	private String batchName;
 
+	@JsonIgnore
 	@Column(name = "PROCESSED_DATE_TIME", nullable = false)
 	private LocalDateTime processedDateTime;
 
@@ -35,6 +42,9 @@ public class PayslipBatch {
 
 	@Transient
 	private String link;
+
+	@Transient
+	private List<IncomeItem> incomeItems;
 
 	public PayslipBatch() {}
 
@@ -62,12 +72,12 @@ public class PayslipBatch {
 		this.payslips = payslips;
 	}
 
-	public String getFilename() {
-		return filename;
+	public String getBatchName() {
+		return batchName;
 	}
 
-	public void setFilename(String filename) {
-		this.filename = filename;
+	public void setBatchName(String batchName) {
+		this.batchName = batchName;
 	}
 
 	public String getLink() {
@@ -76,6 +86,20 @@ public class PayslipBatch {
 
 	public void setLink(String link) {
 		this.link = link;
+	}
+
+	public List<IncomeItem> getIncomeItems() {
+		return incomeItems;
+	}
+
+	public void setIncomeItems(List<IncomeItem> incomeItems) {
+		this.incomeItems = incomeItems;
+	}
+
+	@Override
+	public String toString() {
+		return new ToStringCreator(this).append(id).append(batchName).append(processedDateTime)
+				.append(payslips).toString();
 	}
 
 }

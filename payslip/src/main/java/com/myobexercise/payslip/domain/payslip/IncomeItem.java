@@ -1,37 +1,53 @@
-package com.myobexercise.payslip.domain.payment;
+package com.myobexercise.payslip.domain.payslip;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.myobexercise.payslip.validator.ValidPayPeriod;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.core.style.ToStringCreator;
 
 @JsonPropertyOrder({"firstName", "lastName", "salary", "superannuationRate", "payPeriod"})
 public class IncomeItem {
 
+	@NotBlank
+	@Size(min = 1, max = 50)
 	private String firstName;
-	private String lastName;
-	private BigDecimal salary;
-	@JsonDeserialize(using = PercentageDeserializer.class)
-	private BigDecimal superannuationRate;
-	private String payPeriod;
 
-	// Current system limitation - Only financial year 2012 - 2013 supported
-	private LocalDate payPeriodStartDate = LocalDate.of(2012, 7, 1);
+	@NotBlank
+	@Size(min = 1, max = 50)
+	private String lastName;
+
+	@NotNull
+	@Min(value = 0)
+	@Max(value = 1000000000)
+	private BigDecimal salary;
+
+	@NotNull
+	@Min(value = 0)
+	@Max(value = 1)
+	private BigDecimal superannuationRate;
+
+	@NotBlank
+	@ValidPayPeriod
+	private String payPeriod;
 
 	public IncomeItem() {}
 
 	public IncomeItem(String firstName, String lastName, BigDecimal salary,
-			BigDecimal superannuationRate, String payPeriod, LocalDate payPeriodStartDate) {
+			BigDecimal superannuationRate, String payPeriod) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.salary = salary;
 		this.superannuationRate = superannuationRate;
 		this.payPeriod = payPeriod;
-		this.payPeriodStartDate = payPeriodStartDate;
 	}
 
 	public String getFirstName() {
@@ -72,14 +88,6 @@ public class IncomeItem {
 
 	public void setPayPeriod(String payPeriod) {
 		this.payPeriod = payPeriod;
-	}
-
-	public LocalDate getPayPeriodStartDate() {
-		return payPeriodStartDate;
-	}
-
-	public void setPayPeriodStartDate(LocalDate payPeriodStartDate) {
-		this.payPeriodStartDate = payPeriodStartDate;
 	}
 
 	@Override

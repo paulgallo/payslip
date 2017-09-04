@@ -1,9 +1,9 @@
 package com.myobexercise.payslip.service.taxrate;
 
 import com.myobexercise.payslip.dao.taxrate.IncomeRatePeriodRepository;
-import com.myobexercise.payslip.domain.payment.IncomeItem;
-import com.myobexercise.payslip.domain.taxrate.IncomeRatePeriod;
-import com.myobexercise.payslip.domain.taxrate.IncomeRateTaxBracket;
+import com.myobexercise.payslip.domain.payslip.IncomeItem;
+import com.myobexercise.payslip.domain.taxrate.IncomeTaxRateBracket;
+import com.myobexercise.payslip.domain.taxrate.IncomeTaxRatePeriod;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 @Component
-public class IncomeRateService {
+public class IncomeTaxRateService {
 
 	@Autowired
 	private IncomeRatePeriodRepository incomeRatePeriodRepository;
 
-	public IncomeRateService() {}
+	public IncomeTaxRateService() {}
 
 	public IncomeRatePeriodRepository getIncomeRatePeriodRepository() {
 		return incomeRatePeriodRepository;
@@ -30,11 +30,18 @@ public class IncomeRateService {
 		this.incomeRatePeriodRepository = incomeRatePeriodRepository;
 	}
 
-	public IncomeRateTaxBracket findIncomeRateTaxBracketForIncomeItem(IncomeItem incomeItem) {
-		IncomeRatePeriod incomeRatePeriod = findIncomeRatePeriod(incomeItem);
-		List<IncomeRateTaxBracket> matchingTaxBrackets = null;
-		if (incomeRatePeriod != null) {
-			matchingTaxBrackets = incomeRatePeriod.getTaxBrackets().stream()
+	/**
+	 * Finds the {@link IncomeTaxRateBracket} for the {@link IncomeItem#getSalary()}. NOTE:
+	 * {@link IncomeItem#getPayPeriod()} is currently disregarded.
+	 * 
+	 * @param incomeItem The {@link IncomeItem} to evaluate.
+	 * @return {@link IncomeTaxRateBracket} for the incomeItem
+	 */
+	public IncomeTaxRateBracket findIncomeTaxRateBracketForIncomeItem(IncomeItem incomeItem) {
+		IncomeTaxRatePeriod incomeTaxRatePeriod = findIncomeRatePeriod(incomeItem);
+		List<IncomeTaxRateBracket> matchingTaxBrackets = null;
+		if (incomeTaxRatePeriod != null) {
+			matchingTaxBrackets = incomeTaxRatePeriod.getTaxBrackets().stream()
 					.filter(t -> incomeItemMatchesBracket(incomeItem, t)).collect(Collectors.toList());
 		}
 
@@ -44,7 +51,7 @@ public class IncomeRateService {
 	}
 
 	protected void validateMatchingTaxBrackets(IncomeItem incomeItem,
-			List<IncomeRateTaxBracket> matchingTaxBrackets) {
+			List<IncomeTaxRateBracket> matchingTaxBrackets) {
 		if (CollectionUtils.isEmpty(matchingTaxBrackets)) {
 			throw new IllegalStateException(
 					"ERROR: Matching Tax Bracket not found for Income Details:" + incomeItem);
@@ -56,20 +63,21 @@ public class IncomeRateService {
 	}
 
 	protected boolean incomeItemMatchesBracket(IncomeItem incomeItem,
-			IncomeRateTaxBracket incomeRateTaxBracket) {
+			IncomeTaxRateBracket incomeTaxRateBracket) {
 		BigDecimal salary = incomeItem.getSalary().setScale(0, BigDecimal.ROUND_HALF_UP);
-		return salary.compareTo(incomeRateTaxBracket.getBracketStartValue()) >= 0
-				&& (incomeRateTaxBracket.getBracketEndValue() == null
-						|| salary.compareTo(incomeRateTaxBracket.getBracketEndValue()) <= 0);
+		return salary.compareTo(incomeTaxRateBracket.getBracketStartValue()) >= 0
+				&& (incomeTaxRateBracket.getBracketEndValue() == null
+						|| salary.compareTo(incomeTaxRateBracket.getBracketEndValue()) <= 0);
 	}
 
-	protected IncomeRatePeriod findIncomeRatePeriod(IncomeItem incomeItem) {
+	protected IncomeTaxRatePeriod findIncomeRatePeriod(IncomeItem incomeItem) {
 		LocalDate incomeItemPayPeriodDate = determineIncomeItemPayPeriodDate(incomeItem);
 		return incomeRatePeriodRepository.findByPayPeriodDate(incomeItemPayPeriodDate);
 	}
 
 	protected LocalDate determineIncomeItemPayPeriodDate(IncomeItem incomeItem) {
-		return incomeItem.getPayPeriodStartDate();
+		// Current system limitation - Only 2012-2013 Financial Year supported.
+		return LocalDate.of(2012, 7, 1);
 	}
 
 }

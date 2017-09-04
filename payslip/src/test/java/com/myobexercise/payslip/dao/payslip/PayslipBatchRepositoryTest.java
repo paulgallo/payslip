@@ -1,9 +1,10 @@
-package com.myobexercise.payslip.dao.payment;
+package com.myobexercise.payslip.dao.payslip;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.myobexercise.payslip.domain.payment.Payslip;
-import com.myobexercise.payslip.domain.payment.PayslipBatch;
+import com.myobexercise.payslip.dao.payslip.PayslipBatchRepository;
+import com.myobexercise.payslip.domain.payslip.Payslip;
+import com.myobexercise.payslip.domain.payslip.batch.PayslipBatch;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

@@ -2,8 +2,8 @@ package com.myobexercise.payslip.web.payslip;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.myobexercise.payslip.dao.payment.PayslipBatchRepository;
-import com.myobexercise.payslip.domain.payment.PayslipBatch;
+import com.myobexercise.payslip.dao.payslip.PayslipBatchRepository;
+import com.myobexercise.payslip.domain.payslip.batch.PayslipBatch;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ import org.springframework.util.MultiValueMap;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class PayslipControllerIntegrationTest {
+public class PayslipClientControllerIntegrationTest {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
@@ -39,22 +39,18 @@ public class PayslipControllerIntegrationTest {
 	@Test
 	public void test() {
 		ClassPathResource resource =
-				new ClassPathResource("PayslipControllerIntegrationSample.csv", getClass());
+				new ClassPathResource("/PayslipControllerIntegrationSample.csv", getClass());
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("fileType", "csv");
-		// headers.setContentType(MediaType.TEXT_PLAIN);
-		// HttpEntity<MultiValueMap<String, Object>> request =
-		// new HttpEntity<MultiValueMap<String, Object>>(map, headers);
-
+		headers.set("Content-Type", "multipart/form-data;charset=UTF-8");
 
 		MultiValueMap<String, Object> parameters = new LinkedMultiValueMap<>();
-		parameters.add("file", resource);
+		parameters.add("payslipBatchFile", resource);
 
 		HttpEntity<MultiValueMap<String, Object>> request =
 				new HttpEntity<MultiValueMap<String, Object>>(parameters, headers);
 
-		ResponseEntity<String> response =
-				this.restTemplate.postForEntity("/payslip-batches", request, String.class);
+
+		ResponseEntity<String> response = this.restTemplate.postForEntity("/", request, String.class);
 
 		List<PayslipBatch> list = payslipBatchRepository.findAllByOrderById();
 		Long id = list.get(0).getId();

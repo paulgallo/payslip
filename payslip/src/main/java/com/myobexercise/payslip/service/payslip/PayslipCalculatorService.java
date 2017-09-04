@@ -1,9 +1,9 @@
 package com.myobexercise.payslip.service.payslip;
 
-import com.myobexercise.payslip.domain.payment.IncomeItem;
-import com.myobexercise.payslip.domain.payment.Payslip;
-import com.myobexercise.payslip.domain.taxrate.IncomeRateTaxBracket;
-import com.myobexercise.payslip.service.taxrate.IncomeRateService;
+import com.myobexercise.payslip.domain.payslip.IncomeItem;
+import com.myobexercise.payslip.domain.payslip.Payslip;
+import com.myobexercise.payslip.domain.taxrate.IncomeTaxRateBracket;
+import com.myobexercise.payslip.service.taxrate.IncomeTaxRateService;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -27,7 +27,7 @@ public class PayslipCalculatorService {
 	private int calculationScale = 0;
 
 	@Autowired
-	private IncomeRateService incomeRateService;
+	private IncomeTaxRateService incomeTaxRateService;
 
 	public PayslipCalculatorService() {}
 
@@ -59,12 +59,12 @@ public class PayslipCalculatorService {
 		this.annualCalculationDivisor = annualCalculationDivisor;
 	}
 
-	public IncomeRateService getIncomeRateService() {
-		return incomeRateService;
+	public IncomeTaxRateService getIncomeRateService() {
+		return incomeTaxRateService;
 	}
 
-	public void setIncomeRateService(IncomeRateService incomeRateService) {
-		this.incomeRateService = incomeRateService;
+	public void setIncomeRateService(IncomeTaxRateService incomeTaxRateService) {
+		this.incomeTaxRateService = incomeTaxRateService;
 	}
 
 	public Payslip createPayslip(IncomeItem incomeItem) {
@@ -106,12 +106,12 @@ public class PayslipCalculatorService {
 	}
 
 	protected BigDecimal calculateIncomeTax(IncomeItem incomeItem) {
-		IncomeRateTaxBracket incomeRateTaxBracket =
-				incomeRateService.findIncomeRateTaxBracketForIncomeItem(incomeItem);
+		IncomeTaxRateBracket incomeTaxRateBracket =
+				incomeTaxRateService.findIncomeTaxRateBracketForIncomeItem(incomeItem);
 
-		return incomeItem.getSalary().subtract(incomeRateTaxBracket.getBracketStartValue())
-				.add(BigDecimal.ONE).multiply(incomeRateTaxBracket.getTaxRatePercentage())
-				.add(incomeRateTaxBracket.getAdditionalTaxAmount())
+		return incomeItem.getSalary().subtract(incomeTaxRateBracket.getBracketStartValue())
+				.add(BigDecimal.ONE).multiply(incomeTaxRateBracket.getTaxRatePercentage())
+				.add(incomeTaxRateBracket.getAdditionalTaxAmount())
 				.divide(annualCalculationDivisor, calculationScale, calculationRoundingMode);
 	}
 

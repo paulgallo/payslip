@@ -4,7 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+import org.springframework.web.client.RestTemplate;
 
 // Need to manually add support for jsr310 java 8 java.time.*
 @EntityScan(basePackageClasses = {PayslipApplication.class, Jsr310JpaConverters.class})
@@ -14,5 +16,10 @@ public class PayslipApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PayslipApplication.class, args);
+	}
+
+	@Bean
+	public RestTemplate restTemplate() {
+		return new RestTemplate();
 	}
 }

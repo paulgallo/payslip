@@ -14,8 +14,8 @@ import javax.persistence.Table;
 import org.springframework.core.style.ToStringCreator;
 
 @Entity
-@Table(name = "INCOME_RATE_PERIOD")
-public class IncomeRatePeriod {
+@Table(name = "INCOME_TAX_RATE_PERIOD")
+public class IncomeTaxRatePeriod {
 
 	@Id
 	private Long id;
@@ -27,10 +27,10 @@ public class IncomeRatePeriod {
 	private LocalDate endDate;
 
 	@OneToMany(fetch = FetchType.EAGER)
-	@JoinColumn(name = "INCOME_RATE_PERIOD_ID")
-	private List<IncomeRateTaxBracket> taxBrackets;
+	@JoinColumn(name = "INCOME_TAX_RATE_PERIOD_ID")
+	private List<IncomeTaxRateBracket> taxBrackets;
 
-	public IncomeRatePeriod() {}
+	public IncomeTaxRatePeriod() {}
 
 	public Long getId() {
 		return id;
@@ -56,11 +56,11 @@ public class IncomeRatePeriod {
 		this.endDate = endDate;
 	}
 
-	public List<IncomeRateTaxBracket> getTaxBrackets() {
+	public List<IncomeTaxRateBracket> getTaxBrackets() {
 		return taxBrackets;
 	}
 
-	public void setTaxBrackets(List<IncomeRateTaxBracket> taxBrackets) {
+	public void setTaxBrackets(List<IncomeTaxRateBracket> taxBrackets) {
 		this.taxBrackets = taxBrackets;
 	}
 
